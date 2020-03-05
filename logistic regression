@@ -1,0 +1,25 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+dataset = pd.read_csv('balancingbob.csv')
+X= dataset.iloc[:, :-2]
+Y = dataset.iloc[:, 35:36]
+genders = pd.get_dummies(X['GENDER'], drop_first = True)
+X = X.drop('GENDER', axis = 1)
+X= pd.concat([X, genders], axis= 1)
+X= pd.get_dummies(X , columns = [ 'MARITAL_STATUS','WORKING_SECTOR', 'TYPE_OF_FAMILY', 'PERSON_STATUS', 'EDUCATION', 'PURPOSE'], drop_first= True)
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.3, random_state = 0)
+import seaborn as sns
+sns.heatmap(X.isnull (),yticklables = True , cmap = 'Blues')
+X.dropna(inplace = True)
+from sklearn.linear_model import LogisticRegression
+logmodel = LogisticRegression()
+logmodel.fit(X_train, Y_train)
+predictions = logmodel.predict(X_test)
+from sklearn.metrics import classification_report
+classification_report (Y_test, predictions)
+from sklearn.metrics import confusion_matrix
+confusion_matrix (Y_test, predictions)
+from sklearn.metrics import accuracy_score
+accuracy_score(Y_test, predictions)
